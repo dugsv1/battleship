@@ -1,0 +1,28 @@
+@startuml
+actor player
+participant "Gamecontroller Class" as GC
+participant "Gameboard Class" as GB
+participant "Ship Class" as Ship
+participant "Dom Controller" as DOM
+
+player -> GC: Attack Coordinates (x,y)
+GC -> GB: sendAttack(x,y)
+GB -> GB: receiveAttack(x,y)
+
+alt If Hit
+    GB -> Ship: sends hit message
+    Ship -> Ship: hit()
+else 
+    GB -> GB: recordCoordinates(x,y)
+end
+
+GB --> GC: Attack results (hit/miss)\nreturn { hit:true, allsunk: true/false}
+GC -> GC: processResults()
+
+alt Check if all ships sunk
+    GC -> DOM: updateSquare(player,x,y)
+    DOM -> DOM: updateSquare(x,y)
+else
+    GC -> DOM: gameOverMessage()
+end
+@enduml
