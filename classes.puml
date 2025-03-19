@@ -1,30 +1,46 @@
 @startuml
-actor player
-participant "Gamecontroller Class" as GC
-participant "Gameboard Class" as GB
-participant "Ship Class" as Ship
-participant "Dom Controller" as DOM
 
-player -> GC: Attack Coordinates (x,y)
-GC -> GB: sendAttack(x,y)
-GB -> GB: receiveAttack(x,y)
+class Gamecontroller {
+    + state: object
+    --
+    + sendAttack(x: int, y: int): void
+    + processResults(): void
+}
 
-alt If Hit
-    GB -> Ship: sends hit message
-    Ship -> Ship: hit()
-    Ship --> GB: isSunk(): true/false
+class Gameboard {
+    --
+    + receiveAttack(x: int, y: int): void
+    + recordCoordinates(x: int, y: int): void
+    + allSunk(): bool
+    + attackProcessed(hit: bool, allSunk: bool): void
+    }
 
-else 
-    GB -> GB: recordCoordinates(x,y)
-end
+class Ship {
+    - length: int
+    - damage: int
+    - sunk: bool
+    --
+    + hit(): void
+    + isSunk(): bool
+}
 
-GB --> GC: Attack results (hit/miss)\nreturn { hit:true, allsunk: true/false}
-GC -> GC: processResults()
+class Player {
+    - real: bool
+    - gameboard: Gameboard
+    --
+    + attack(x: int, y: int): void
+}
 
-alt Check if all ships sunk
-    GC -> DOM: updateSquare(player,x,y)
-    DOM -> DOM: updateSquare(x,y)
-else
-    GC -> DOM: gameOverMessage()
-end
+class Domcontroller {
+    --
+    + updateView(state: object): void
+}
+
+Gamecontroller -d-> Gameboard
+Gamecontroller --> Player
+Gamecontroller --> Domcontroller
+Gameboard "1" *-- "*" Ship
+Player o-- Gameboard
+Domcontroller <-- Gameboard : listens for updates
+
 @enduml

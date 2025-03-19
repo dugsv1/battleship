@@ -1,0 +1,28 @@
+@startuml
+actor player
+participant "Gamecontroller Class" as GC
+participant "Gameboard Class" as GB
+participant "Ship Class" as Ship
+participant "Dom Controller" as DOM
+
+player -> GC: Attack Coordinates (x,y)
+GC -> GB: sendAttack(x,y)
+GB -> GB: receiveAttack(x,y)
+
+alt If Hit
+    GB -> Ship: sends hit()
+    Ship -> Ship: hit()
+    Ship --> GB: isSunk(): true/false
+end
+
+GB -> GB: recordCoordinates(x,y)
+GB -> GC: attackProcessed(hit: true/false, allSunk: true/false)
+
+
+alt All Ships Sunk
+   GC -> DOM: gameOverMessage()
+else
+   GC -> DOM: updateSquare(x,y)
+end
+
+@enduml
