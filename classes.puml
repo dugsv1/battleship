@@ -12,6 +12,8 @@ GB -> GB: receiveAttack(x,y)
 alt If Hit
     GB -> Ship: sends hit message
     Ship -> Ship: hit()
+    Ship --> GB: isSunk(): true/false
+
 else 
     GB -> GB: recordCoordinates(x,y)
 end
